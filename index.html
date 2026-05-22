@@ -1327,6 +1327,51 @@
     btn.disabled = true;
     btn.innerHTML = '送信中...';
 
+    // フォームデータを収集
+    const formData = new FormData(this);
+    const data = {};
+    formData.forEach((value, key) => {
+      if (data[key]) {
+        if (Array.isArray(data[key])) {
+          data[key].push(value);
+        } else {
+          data[key] = [data[key], value];
+        }
+      } else {
+        data[key] = value;
+      }
+    });
+
+    // ジャンル(複数選択)を配列で取得
+    data.genre = Array.from(this.querySelectorAll('[name="genre"]:checked')).map(el => el.value);
+
+    // URL(複数)を配列で取得
+    data.contentUrl = Array.from(this.querySelectorAll('[name="contentUrl"]')).map(el => el.value).filter(v => v);
+
+    // Apps Script のURLに置き換えてください
+    const API_URL = 'https://script.google.com/macros/s/AKfycbzJ62M_LtAr6M7jy6zSrowBp3nHsCQUk4hFwCn4SOiOIWYqXj0P6wDaANqOak4Wr9yS/exec';
+
+    fetch(API_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    })
+    .then(() => {
+      document.getElementById('entryForm').style.display = 'none';
+      document.querySelector('.privacy-notice').style.display = 'none';
+      document.querySelector('.privacy-check').style.display = 'none';
+      document.getElementById('successState').classList.add('shown');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+      btn.disabled = false;
+      btn.innerHTML = '🚀 エントリーを送信する';
+      alert('送信に失敗しました。お手数ですが、もう一度お試しください。');
+    });
+    btn.innerHTML = '送信中...';
+
     setTimeout(() => {
       document.getElementById('entryForm').style.display = 'none';
       document.querySelector('.privacy-notice').style.display = 'none';
