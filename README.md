@@ -1,0 +1,2 @@
+# mcn-entry
+TikSeek MCNクリエイターエントリーLP
